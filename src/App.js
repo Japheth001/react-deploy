@@ -1,66 +1,62 @@
-import React, { useEffect, useState } from 'react';
 import './App.css';
-import Chuck from './img/chuckpic.jpg';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import ChuckPic from './img/chuckpic.jpg';
 
 function App() {
 
-  const [state, setState] =useState({
-    joke: ''
-  })
+ const [jokes, setJokes]=useState([])
+ const [query, setQuery]=useState('power')
+
+ useEffect(()=>{
+   getResults();
+ })
+
+ const getResults=async()=>{
+   const response=await axios
+   .get(`https://api.chucknorris.io/jokes/search?query=${query}`)
+   setJokes(response.data.result)
+ }
 
 
-useEffect( ()=>{
-    fetchData();
-    
-}, [])
-
-const fetchData = async ()=>{
-  const results= await axios.get('https://api.chucknorris.io/jokes/random');
-  console.log(results.data.value);
-setState({
-      ...state,
-      joke: results.data.value
-    });}
-
-
+ const handleSearch = (e)=>{
+   e.preventDefault()
+   getResults();
+ }
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col-6">
-          <h1 className="title">Chuck Norris API</h1>
-          <img src ={Chuck} alt="Chuck Norris"/>
-        </div>
-
-
-        <div className="col-6 searchJokeCol">
-          <div className="card">
-            <div className="card-header">
-                   <span></span>
-            </div>
-
-            <div className="card-body">
-              <h5>API</h5>
-            </div>
-
-            
-
+    <div className="App">
+      <div className="container">
+        <div className="row">
+          <div className="col-6">
+              <h className="title">Chuck Norris API</h>
+              <img src={ChuckPic} alt="Chuck Norris"/>
+              <h5 className="initials">Designed by Japheth, Email: mumokimeu3@gmail.com</h5>
           </div>
-<div> 
-              <button onClick className="btn btn-warning btn-lg">Reload the Page from the Browser for the Joke to be Generated</button>
-            </div>
-        </div>
 
+        </div>
+        <h1 className="category">Enter Word of your choice to generate related Joke</h1>
+      
       </div>
-      <div className="subtitle">
-        <h1>Here is the Joke</h1>
-        <h5>{state.joke}</h5>
-      </div>
+      
+      <form onSubmit={handleSearch}>
+
+          <input type="text"
+            onChange={e=>setQuery(e.target.value)}
+            value={query}
+          />
+      <button type="submit">Search</button>
+      </form>
+
+
+      {jokes.map(joke=>{
+        return(
+          <p>{joke.value}</p>
+        )
+      })}
     </div>
+    
   );
 }
-
-
 
 export default App;
